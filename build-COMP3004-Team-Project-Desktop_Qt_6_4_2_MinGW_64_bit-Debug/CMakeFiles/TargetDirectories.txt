@@ -1,0 +1,9 @@
+D:/Documents/COMP3004-Team-Project/build-COMP3004-Team-Project-Desktop_Qt_6_4_2_MinGW_64_bit-Debug/CMakeFiles/COMP3004-Team-Project.dir
+D:/Documents/COMP3004-Team-Project/build-COMP3004-Team-Project-Desktop_Qt_6_4_2_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+D:/Documents/COMP3004-Team-Project/build-COMP3004-Team-Project-Desktop_Qt_6_4_2_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+D:/Documents/COMP3004-Team-Project/build-COMP3004-Team-Project-Desktop_Qt_6_4_2_MinGW_64_bit-Debug/CMakeFiles/list_install_components.dir
+D:/Documents/COMP3004-Team-Project/build-COMP3004-Team-Project-Desktop_Qt_6_4_2_MinGW_64_bit-Debug/CMakeFiles/install.dir
+D:/Documents/COMP3004-Team-Project/build-COMP3004-Team-Project-Desktop_Qt_6_4_2_MinGW_64_bit-Debug/CMakeFiles/install/local.dir
+D:/Documents/COMP3004-Team-Project/build-COMP3004-Team-Project-Desktop_Qt_6_4_2_MinGW_64_bit-Debug/CMakeFiles/install/strip.dir
+D:/Documents/COMP3004-Team-Project/build-COMP3004-Team-Project-Desktop_Qt_6_4_2_MinGW_64_bit-Debug/CMakeFiles/COMP3004-Team-Project_autogen_timestamp_deps.dir
+D:/Documents/COMP3004-Team-Project/build-COMP3004-Team-Project-Desktop_Qt_6_4_2_MinGW_64_bit-Debug/CMakeFiles/COMP3004-Team-Project_autogen.dir
