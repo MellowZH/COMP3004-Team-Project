@@ -20,6 +20,7 @@ private slots:
     void on_Backbuttonmenu_clicked();
     void on_Downarrowmenu_clicked();
     void on_Uparrowmenu_clicked();
+    void on_selectbuttonmenu_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -57,4 +57,8 @@ void MainWindow :: on_Uparrowmenu_clicked(){
     }
 }
 
-
+void MainWindow :: on_selectbuttonmenu_clicked(){
+    if (ui->choice1->isChecked()==false){
+        ui->stackedWidget->setCurrentIndex(2);
+    }
+}
