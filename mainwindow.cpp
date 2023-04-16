@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::updatetime);
     elapsedSeconds = 0;
 }
 
@@ -41,6 +42,10 @@ void MainWindow::on_Selectbuttonsession_clicked()
 
     ui->activesession->toggle();
 //    HrvGraph = ui->hrvGraph
+    if(ui->activesession->isChecked()==true){
+        updatetime();
+        timer->start(1000);
+    }
     if(ui->activesession->isChecked()==false){
         QString filename= "logsoflatestsession.txt" ;
         QFile file(filename);
@@ -48,6 +53,9 @@ void MainWindow::on_Selectbuttonsession_clicked()
         QTextStream out(&file);
         out << "here is the data: \nCoherence values: " << ui->coherenceValue->text() << "\nLength of Session: " << ui->lengthValue->text() << "\nAchivement Value: " << ui->achievementValue->text() << endl;
         file.close();
+        if (timer->isActive()){
+            timer->stop();
+        }
     }
 }
 
