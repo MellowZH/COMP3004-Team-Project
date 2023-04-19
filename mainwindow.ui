@@ -655,7 +655,7 @@ background-color: #D3D3D3;</string>
        <rect>
         <x>0</x>
         <y>20</y>
-        <width>892</width>
+        <width>898</width>
         <height>531</height>
        </rect>
       </property>
@@ -794,6 +794,22 @@ background-color: #4CAF50;</string>
           </layout>
          </item>
          <item>
+          <widget class="QCustomPlot" name="hrvGraph" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_10">
            <item>
             <spacer name="horizontalSpacer_6">
@@ -813,9 +829,6 @@ background-color: #4CAF50;</string>
            </item>
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_4">
-             <item>
-              <widget class="QGraphicsView" name="hrvGraph"/>
-             </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
@@ -2340,6 +2353,14 @@ background-color: #D3D3D3;</string>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

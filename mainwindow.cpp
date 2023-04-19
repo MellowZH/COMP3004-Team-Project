@@ -7,6 +7,23 @@
 #include <QFile>
 #include <ctime>
 #include <QTextStream>
+#include <QLabel>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QtWidgets>
+#include <QtCore/QThread>
+#include <QtCore/QFuture>
+#include <QVector>
+#include <QSystemTrayIcon>
+#include <QProcess>
+#include <QPainter>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QtMultimedia>
+#include <QTimer>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -14,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::updatetime);
     elapsedSeconds = 0;
 }
 
@@ -34,14 +52,79 @@ void MainWindow::updatetime(){
             .arg(sec, 2, 10, QLatin1Char('0'));
     ui->lengthValue->setText(stopWatch);
 }
+//starts new session
+void MainWindow::startNewSession()
+{
+    ui->hrvGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    ui->hrvGraph->xAxis->setLabel("Time");
+    ui->hrvGraph->yAxis->setLabel("HeartRate");
 
+    //adds a new graph
+    ui->hrvGraph->addGraph();
+    ui->hrvGraph->graph(0)->setPen(QPen(Qt::blue));
+    ui->hrvGraph->graph(0)->setBrush(QBrush(QColor(0,0,255,20)));
+    ui->hrvGraph->addGraph();
+    ui->hrvGraph->graph(1)->setPen(QPen(Qt::red));
+    //generates points of data
+    QVector<double> x(251), y0(251), y1(251);
+    for (int i=0; i<251; ++i){
+        x[i] = i;
+        y0[i] = exp(-i/150.0)*qCos(i/10.0);
+        y1[i] = exp(-i/150.0);
+    }
+    ui->hrvGraph->xAxis2->setVisible(true);
+    ui->hrvGraph->xAxis2->setTickLabels(false);
+    ui->hrvGraph->yAxis2->setVisible(true);
+    ui->hrvGraph->yAxis2->setTickLabels(false);
+
+    //makes it so that the left and bottom axes are always transfering their ranges to the right and top axes
+    connect(ui->hrvGraph->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->hrvGraph->xAxis2, SLOT(setRange(QCPRange)));
+    connect(ui->hrvGraph->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->hrvGraph->yAxis2, SLOT(setRange(QCPRange)));
+
+    ui->hrvGraph->graph(0)->setData(x, y0);
+    ui->hrvGraph->graph(1)->setData(x, y1);
+
+    ui->hrvGraph->graph(0)->rescaleAxes();
+    ui->hrvGraph->graph(1)->rescaleAxes();
+
+    ui->hrvGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+}
+//updates the graph data
+void MainWindow::updateGraphData(){
+    //gens some new HR values
+    int graphoffset=0;
+    QVector<double> x(251), y(251);
+    for (int i=0; i<251; ++i){
+        x[i]= i;
+        y[i]= exp(-i/150.0)*qCos((i+graphoffset)/10);
+        y[i] += exp(-(i+10)/150.0);
+    }
+    ui->hrvGraph->graph(0)->setData(x, y);
+    graphoffset += 1;
+    ui->hrvGraph->rescaleAxes();
+}
 //makes it so that when the select button is started the timer activates and numbers start changing
 void MainWindow::on_Selectbuttonsession_clicked()
 {
 
     ui->activesession->toggle();
-//    HrvGraph = ui->hrvGraph
+
+    if(ui->activesession->isChecked()==true){
+        updatetime();
+        startNewSession();
+        timer->start(1000);
+        QCPGraph *graph = ui->hrvGraph->graph(0);
+//        QSharedPointer<QCPGraphDataContainer> dataContainter= graph->data();
+//        QCPGraphDataContainer *data = dataContainer.data();
+//        QVector<QCPGraphData> graphData;
+//        for (int i=0; i <data->size(); i++){
+//            graphData.append(*(data->at(i)));
+//        }
+    }
     if(ui->activesession->isChecked()==false){
+        if (timer->isActive()){
+            timer->stop();
+        }
         QString filename= "logsoflatestsession.txt" ;
         QFile file(filename);
         file.open(QIODevice::WriteOnly | QIODevice::Text);
