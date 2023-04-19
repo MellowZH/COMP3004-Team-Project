@@ -2,33 +2,19 @@
 #define SESSION_H
 
 #include <string>
+#include "sessionData.h"
 using namespace std;
 
 class Session
 {
-public:
-    Session();
-    float getCoherenceScore();
-    float getAchievementScore();
-    //getHRVGraph
-    string getChallengeLevel();
-    float getTimeInLowCoherence();
-    float getTimeInMedCoherence();
-    float getTimeInHighCoherence();
-
-
-
-
-
-private:
-    float coherenceScore;    int sessionLength; //in ms
-    float achievementScore;
-    //HRV GRAPH
-    string challengeLevel;
-    float timeInLowCoherence;
-    float timeInMedCoherence;
-    float timeInHighCoherence;
-    float avgCoherence;
+    public:
+        void startSession();
+        void stopSession();
+        SessionData getSessionData();
+    
+    private:
+        SessionData sessionData;
 };
+
 
 #endif // SESSION_H

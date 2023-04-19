@@ -1,6 +1,13 @@
 #include "session.h"
 
-Session::Session()
-{
+void Session::startSession() {
+    this->sessionData.achievementScore =5;
+}
 
+void Session::stopSession() {
+    
+}
+
+SessionData Session::getSessionData() {
+    return this->sessionData;
 }
