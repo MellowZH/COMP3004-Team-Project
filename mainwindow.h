@@ -34,6 +34,8 @@ private slots:
     void startNewSession();
     void updateGraphData();
 
+    void on_choice1_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     list<Session*> sessionLog;
