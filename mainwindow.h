@@ -37,6 +37,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QTimer *timer;
+    Session sessionLog[];
     int elapsedSeconds;
 
     QVector<double> getHRVData(){

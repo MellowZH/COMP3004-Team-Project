@@ -55,6 +55,7 @@ void MainWindow::updatetime(){
 //starts new session
 void MainWindow::startNewSession()
 {
+    Session newSession = new Session();
     ui->hrvGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     ui->hrvGraph->xAxis->setLabel("Time");
     ui->hrvGraph->yAxis->setLabel("HeartRate");
