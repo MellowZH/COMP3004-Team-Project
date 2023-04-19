@@ -1,5 +1,9 @@
 #include "sessionData.h"
 
+SessionData::SessionData(){
+
+}
+
 float SessionData::getCoherenceScore() {
     return this->coherenceScore;
 }

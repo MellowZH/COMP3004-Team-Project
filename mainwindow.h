@@ -1,9 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "session.h"
 #include <QMainWindow>
 #include <QTimer>
-//new stuff for graph
 #include <QLabel>
 #include <QVector>
 #include <QtMultimedia>
@@ -30,15 +30,13 @@ private slots:
     void on_Downarrowmenu_clicked();
     void on_Uparrowmenu_clicked();
     void on_Selectbuttonsession_clicked();
-    void updatetime();
+    void updateTime(int);
     void startNewSession();
     void updateGraphData();
 
 private:
     Ui::MainWindow *ui;
-    QTimer *timer;
-    Session sessionLog[];
-    int elapsedSeconds;
+    list<Session*> sessionLog;
 
     QVector<double> getHRVData(){
         QVector<double> hrvData;

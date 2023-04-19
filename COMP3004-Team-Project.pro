@@ -20,10 +20,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    session.cpp \
+    sessionData.cpp \
     qcustomplot.cpp
+
 
 HEADERS += \
     mainwindow.h \
+    session.h \
+    sessionData.h \
     qcustomplot.h
 
 FORMS += \
