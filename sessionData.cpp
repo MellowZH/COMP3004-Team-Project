@@ -1,7 +1,10 @@
 #include "sessionData.h"
 
 SessionData::SessionData(){
-
+    this->sessionLength = 0;
+    this->challengeLevel = 1;
+    this->coherenceScore = 0;
+    this->achievementScore = 0;
 }
 
 float SessionData::getCoherenceScore() {
@@ -12,7 +15,7 @@ float SessionData::getAchievementScore() {
     return this->achievementScore;
 }
 
-string SessionData::getChallengeLevel() {
+int SessionData::getChallengeLevel() {
     return this->challengeLevel;
 }
 

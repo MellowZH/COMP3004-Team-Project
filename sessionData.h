@@ -1,6 +1,7 @@
 #ifndef SESSIONDATA_H
 #define SESSIONDATA_H
 
+#include "qcustomplot.h"
 #include <string>
 using namespace std;
 
@@ -12,7 +13,7 @@ public:
     float getCoherenceScore();
     float getAchievementScore();
     //getHRVGraph
-    string getChallengeLevel();
+    int getChallengeLevel();
     float getTimeInLowCoherence();
     float getTimeInMedCoherence();
     float getTimeInHighCoherence();
@@ -20,14 +21,14 @@ public:
 
 private:
     float coherenceScore;    
-    int sessionLength; //in ms
+    int sessionLength; //in seconds
     float achievementScore;
-    //HRV GRAPH
-    string challengeLevel;
+    int challengeLevel;
     float timeInLowCoherence;
     float timeInMedCoherence;
     float timeInHighCoherence;
     float avgCoherence;
+    QCPDataContainer<QCPGraphData> hrvData;
 };
 
 #endif // SESSIONDATA_H

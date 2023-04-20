@@ -647,7 +647,7 @@ background-color: #D3D3D3;</string>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Sessionpage">
      <widget class="QWidget" name="verticalLayoutWidget">
@@ -1388,11 +1388,18 @@ background-color: #D3D3D3;</string>
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="Selectbuttonsession">
+            <widget class="QToolButton" name="startStopSessionButton">
              <property name="font">
               <font>
                <pointsize>25</pointsize>
               </font>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #549C30;
+</string>
              </property>
              <property name="text">
               <string/>
@@ -1402,6 +1409,9 @@ background-color: #D3D3D3;</string>
                <width>50</width>
                <height>40</height>
               </size>
+             </property>
+             <property name="autoRaise">
+              <bool>true</bool>
              </property>
              <property name="arrowType">
               <enum>Qt::NoArrow</enum>
@@ -1472,22 +1482,6 @@ background-color: #D3D3D3;</string>
         </layout>
        </item>
       </layout>
-     </widget>
-     <widget class="QCheckBox" name="activesession">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>400</x>
-        <y>570</y>
-        <width>82</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>CheckBox</string>
-      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="Menupage">

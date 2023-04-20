@@ -14,17 +14,20 @@ class Session: public QObject
         Session();
         void startSession();
         void stopSession();
-        void updateTime();
+        void updateGraph();
+        void updateCoherence();
         SessionData getSessionData();
         bool isActive();
-        //QTimer getTimer();
     
     private:
         SessionData *sessionData;
-        QTimer *timer;
+        QTimer *hrvTimer;
+        QTimer *coherenceTimer;
 
     signals:
         void timeUpdated(int);
+        void graphUpdated(QCPDataContainer<QCPGraphData>);
+        void coherenceUpdated(float, float);
 };
 
 

@@ -31,12 +31,59 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->hrvGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    ui->hrvGraph->xAxis->setLabel("Time");
+    ui->hrvGraph->yAxis->setLabel("HeartRate");
+
+    //adds a new graph
+    ui->hrvGraph->addGraph();
+    ui->hrvGraph->graph(0)->setPen(QPen(Qt::blue));
+    ui->hrvGraph->graph(0)->setBrush(QBrush(QColor(0,0,255,20)));
+    ui->hrvGraph->addGraph();
+    ui->hrvGraph->xAxis2->setVisible(true);
+    ui->hrvGraph->xAxis2->setTickLabels(false);
+    ui->hrvGraph->yAxis2->setVisible(true);
+    ui->hrvGraph->yAxis2->setTickLabels(false);
+    connect(ui->hrvGraph->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->hrvGraph->xAxis2, SLOT(setRange(QCPRange)));
+    connect(ui->hrvGraph->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->hrvGraph->yAxis2, SLOT(setRange(QCPRange)));
+    ui->hrvGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+
+    srand(time(0)); //seed random number generator
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+//Starts or stops a session
+void MainWindow::on_startStopSessionButton_clicked()
+{
+    if(sessionLog.empty() || !sessionLog.front()->isActive()){
+        cout<<"Starting new Session"<<endl;
+        Session *newSession = new Session();
+        sessionLog.push_front(newSession); //List will be sorted with most recent session at the front of the list
+        connect(newSession, SIGNAL(timeUpdated(int)),this, SLOT(updateTime(int)));
+        connect(newSession, SIGNAL(graphUpdated(QCPDataContainer<QCPGraphData>)), this, SLOT(updateGraphData(QCPDataContainer<QCPGraphData>)));
+        connect(newSession, SIGNAL(coherenceUpdated(float,float)), this, SLOT(updateCoherence(float,float)));
+        newSession->startSession();
+    }
+    else{
+        sessionLog.front()->stopSession();
+    }
+//    if(ui->activesession->isChecked()==false){
+    //        if (timer->isActive()){
+    //            timer->stop();
+    //        }
+    //        QString filename= "logsoflatestsession.txt" ;
+    //        QFile file(filename);
+    //        file.open(QIODevice::WriteOnly | QIODevice::Text);
+    //        QTextStream out(&file);
+    //        out << "here is the data: \nCoherence values: " << ui->coherenceValue->text() << "\nLength of Session: " << ui->lengthValue->text() << "\nAchivement Value: " << ui->achievementValue->text() << endl;
+    //        file.close();
+    //    }
+   }
 
 //updates the time
 void MainWindow::updateTime(int elapsedSeconds){
@@ -49,92 +96,18 @@ void MainWindow::updateTime(int elapsedSeconds){
             .arg(sec, 2, 10, QLatin1Char('0'));
     ui->lengthValue->setText(stopWatch);
 }
-//starts new session
-void MainWindow::startNewSession()
-{
 
-}
 //updates the graph data
-void MainWindow::updateGraphData(){
-    //gens some new HR values
-    int graphoffset=0;
-    QVector<double> x(251), y(251);
-    for (int i=0; i<251; ++i){
-        x[i]= i;
-        y[i]= exp(-i/150.0)*qCos((i+graphoffset)/10);
-        y[i] += exp(-(i+10)/150.0);
-    }
-    ui->hrvGraph->graph(0)->setData(x, y);
-    graphoffset += 1;
-    ui->hrvGraph->rescaleAxes();
+void MainWindow::updateGraphData(QCPDataContainer<QCPGraphData> hrvData){
+    ui->hrvGraph->graph(0)->data()->set(hrvData);
+    ui->hrvGraph->replot();
+    ui->hrvGraph->graph(0)->rescaleAxes();
 }
-//makes it so that when the select button is started the timer activates and numbers start changing
-void MainWindow::on_Selectbuttonsession_clicked()
-{
-    if(sessionLog.empty() || !sessionLog.front()->isActive()){
-        cout<<"Starting new Session"<<endl;
-        Session *newSession = new Session();
-        sessionLog.push_front(newSession); //List will be sorted with most recent session at the front of the list
-        connect(newSession, SIGNAL(timeUpdated(int)),this, SLOT(updateTime(int)));
-        newSession->startSession();
 
-        ui->hrvGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-        ui->hrvGraph->xAxis->setLabel("Time");
-        ui->hrvGraph->yAxis->setLabel("HeartRate");
-
-        //adds a new graph
-        ui->hrvGraph->addGraph();
-        ui->hrvGraph->graph(0)->setPen(QPen(Qt::blue));
-        ui->hrvGraph->graph(0)->setBrush(QBrush(QColor(0,0,255,20)));
-        ui->hrvGraph->addGraph();
-        ui->hrvGraph->graph(1)->setPen(QPen(Qt::red));
-        //generates points of data
-        QVector<double> x(251), y0(251), y1(251);
-        for (int i=0; i<251; ++i){
-            x[i] = i;
-            y0[i] = exp(-i/150.0)*qCos(i/10.0);
-            y1[i] = exp(-i/150.0);
-        }
-        ui->hrvGraph->xAxis2->setVisible(true);
-        ui->hrvGraph->xAxis2->setTickLabels(false);
-        ui->hrvGraph->yAxis2->setVisible(true);
-        ui->hrvGraph->yAxis2->setTickLabels(false);
-
-        //makes it so that the left and bottom axes are always transfering their ranges to the right and top axes
-        connect(ui->hrvGraph->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->hrvGraph->xAxis2, SLOT(setRange(QCPRange)));
-        connect(ui->hrvGraph->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->hrvGraph->yAxis2, SLOT(setRange(QCPRange)));
-
-        ui->hrvGraph->graph(0)->setData(x, y0);
-        ui->hrvGraph->graph(1)->setData(x, y1);
-
-        ui->hrvGraph->graph(0)->rescaleAxes();
-        ui->hrvGraph->graph(1)->rescaleAxes();
-
-        ui->hrvGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-
-        QCPGraph *graph = ui->hrvGraph->graph(0);
-
-        //        QSharedPointer<QCPGraphDataContainer> dataContainter= graph->data();
-        //        QCPGraphDataContainer *data = dataContainer.data();
-        //        QVector<QCPGraphData> graphData;
-        //        for (int i=0; i <data->size(); i++){
-        //            graphData.append(*(data->at(i)));
-        //        }
-    }
-    else{
-        sessionLog.front()->stopSession();
-    }
-//    if(ui->activesession->isChecked()==false){
-//        if (timer->isActive()){
-//            timer->stop();
-//        }
-//        QString filename= "logsoflatestsession.txt" ;
-//        QFile file(filename);
-//        file.open(QIODevice::WriteOnly | QIODevice::Text);
-//        QTextStream out(&file);
-//        out << "here is the data: \nCoherence values: " << ui->coherenceValue->text() << "\nLength of Session: " << ui->lengthValue->text() << "\nAchivement Value: " << ui->achievementValue->text() << endl;
-//        file.close();
-//    }
+//updates coherenceScore and achievementScore
+void MainWindow::updateCoherence(float coherenceScore, float achievementScore){
+    ui->coherenceValue->setText(QString::number(coherenceScore));
+    ui->achievementValue->setText(QString::number(achievementScore));
 }
 
 //move between pages/screens button commands
