@@ -1,14 +1,22 @@
 #include "sessionData.h"
 
-SessionData::SessionData(){
+SessionData::SessionData(int challengeLevel){
     this->sessionLength = 0;
-    this->challengeLevel = 1;
+    this->challengeLevel = challengeLevel;
     this->coherenceScore = 0;
     this->achievementScore = 0;
+    this->avgCoherence = 0;
+    this->timeInLowCoherence =0;
+    this->timeInMedCoherence = 0;
+    this->timeInHighCoherence=0;
 }
 
 float SessionData::getCoherenceScore() {
     return this->coherenceScore;
+}
+
+int SessionData::getSessionLength(){
+    return this->sessionLength;
 }
 
 float SessionData::getAchievementScore() {
@@ -33,4 +41,12 @@ float SessionData::getTimeInHighCoherence() {
 
 float SessionData::getAvgCoherence() {
     return this->avgCoherence;
+}
+
+char *SessionData::getDate(){
+    return this->date;
+}
+
+QCPDataContainer<QCPGraphData> SessionData::getHrvData(){
+    return this->hrvData;
 }

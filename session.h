@@ -11,15 +11,17 @@ class Session: public QObject
     Q_OBJECT
 
     public:
-        Session();
+        Session(int);
         void startSession();
         void stopSession();
         void updateGraph();
         void updateCoherence();
         SessionData getSessionData();
         bool isActive();
+        void setHrvContact();
     
     private:
+        bool hrvContact;
         SessionData *sessionData;
         QTimer *hrvTimer;
         QTimer *coherenceTimer;
