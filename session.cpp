@@ -14,7 +14,6 @@ Session::Session(int challengeLevel){
 void Session::startSession() {
     this->hrvTimer->start(1000);
     this->coherenceTimer->start(5000);
-    //NEED 64 SECOND TIMER AS WELL FOR COHERENCE SCORE AND LEVEL (LOW MED HIGH)
 }
 
 void Session::stopSession() {
@@ -57,45 +56,93 @@ void Session::updateGraph(){ //This function is called every second
         std::mt19937 gen(rand());
         std::uniform_real_distribution<double> noiseDist(-noiseAmp, noiseAmp);
         sessionData->hrvData.add(QCPGraphData(sessionData->sessionLength, 15*sin(2*M_PI*(0.07)*sessionData->sessionLength)+80 + noiseDist(gen))); //heart rate of 65-95 at 0.07hz
-
         //updates time spent in various coherence levels
         switch (this->sessionData->challengeLevel){
+
             case 1:
                 if(this->sessionData->coherenceScore<0.5){
+                    if(this->sessionData->coherenceLevel != 0){
+                        emit coherenceLevelUpdated(0);
+                    }
+                    this->sessionData->coherenceLevel = 0;
                     this->sessionData->timeInLowCoherence++;
                 }else if(0.5<=this->sessionData->coherenceScore<=0.9){
+                    if(this->sessionData->coherenceLevel != 1){
+                        emit coherenceLevelUpdated(1);
+                    }
+                    this->sessionData->coherenceLevel = 1;
                     this->sessionData->timeInMedCoherence++;
                 }else{
+                    if(this->sessionData->coherenceLevel != 2){
+                        emit coherenceLevelUpdated(2);
+                    }
+                    this->sessionData->coherenceLevel = 2;
                     this->sessionData->timeInHighCoherence++;
                 }
                 break;
 
             case 2:
                 if(this->sessionData->coherenceScore<0.6){
+                    if(this->sessionData->coherenceLevel != 0){
+                        emit coherenceLevelUpdated(0);
+                    }
+                    this->sessionData->coherenceLevel = 0;
                     this->sessionData->timeInLowCoherence++;
                 }else if(0.6<=this->sessionData->coherenceScore<=2.1){
+                    if(this->sessionData->coherenceLevel != 1){
+                        emit coherenceLevelUpdated(1);
+                    }
+                    this->sessionData->coherenceLevel = 1;
                     this->sessionData->timeInMedCoherence++;
                 }else{
+                    if(this->sessionData->coherenceLevel != 2){
+                        emit coherenceLevelUpdated(2);
+                    }
+                    this->sessionData->coherenceLevel = 2;
                     this->sessionData->timeInHighCoherence++;
                 }
                 break;
 
             case 3:
                 if(this->sessionData->coherenceScore<1.8){
+                    if(this->sessionData->coherenceLevel != 0){
+                        emit coherenceLevelUpdated(0);
+                    }
+                    this->sessionData->coherenceLevel = 0;
                     this->sessionData->timeInLowCoherence++;
                 }else if(1.8<=this->sessionData->coherenceScore<=4.0){
+                    if(this->sessionData->coherenceLevel != 1){
+                        emit coherenceLevelUpdated(1);
+                    }
+                    this->sessionData->coherenceLevel = 1;
                     this->sessionData->timeInMedCoherence++;
                 }else{
+                    if(this->sessionData->coherenceLevel != 2){
+                        emit coherenceLevelUpdated(2);
+                    }
+                    this->sessionData->coherenceLevel = 2;
                     this->sessionData->timeInHighCoherence++;
                 }
                 break;
 
             case 4:
                 if(this->sessionData->coherenceScore<4.0){
+                    if(this->sessionData->coherenceLevel != 0){
+                        emit coherenceLevelUpdated(0);
+                    }
+                    this->sessionData->coherenceLevel = 0;
                     this->sessionData->timeInLowCoherence++;
                 }else if(4.0<=this->sessionData->coherenceScore<=6.0){
+                    if(this->sessionData->coherenceLevel != 1){
+                        emit coherenceLevelUpdated(1);
+                    }
+                    this->sessionData->coherenceLevel = 1;
                     this->sessionData->timeInMedCoherence++;
                 }else{
+                    if(this->sessionData->coherenceLevel != 2){
+                        emit coherenceLevelUpdated(2);
+                    }
+                    this->sessionData->coherenceLevel = 2;
                     this->sessionData->timeInHighCoherence++;
                 }
                 break;
@@ -114,6 +161,7 @@ void Session::updateCoherence(){
     }
     this->sessionData->achievementScore += this->sessionData->coherenceScore;
     emit coherenceUpdated(this->sessionData->coherenceScore, this->sessionData->achievementScore);
+    this->sessionData->avgCoherence = ((this->sessionData->sessionLength-5) + this->sessionData->avgCoherence + this->sessionData->coherenceScore)/((this->sessionData->sessionLength));
 }
 
 bool Session::isActive(){
