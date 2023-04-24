@@ -30,6 +30,7 @@ class Session: public QObject
         void timeUpdated(int);
         void graphUpdated(QCPDataContainer<QCPGraphData>);
         void coherenceUpdated(float, float);
+        void coherenceLevelUpdated(int);
 };
 
 

@@ -31,9 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QTimer *batteryTimer = new QTimer;
-    connect(batteryTimer, &QTimer::timeout, this, [this]{batteryDrain();});
-    batteryTimer->start(10000); //drain 1% every 10 sec
+    ui->stackedWidget->setVisible(false);
+    ui->batteryValue->setVisible(false);
 
     //initialize graphs
     ui->hrvGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
@@ -65,6 +64,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->summaryHrvGraph->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->summaryHrvGraph->yAxis2, SLOT(setRange(QCPRange)));
     ui->summaryHrvGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 
+    animation = new QPropertyAnimation(ui->breathPacer, "geometry");
+    animation->setKeyValueAt(0,(QRect(10,325, 36,24)));
+    animation->setKeyValueAt(0.5,(QRect(840,325, 36,24)));
+    animation->setKeyValueAt(1,(QRect(10,325, 36,24)));
+    animation->setLoopCount(1000);
+
     srand(time(0)); //seed random number generator
 }
 
@@ -85,13 +90,19 @@ void MainWindow::on_startStopSessionButton_clicked()
                 connect(newSession, SIGNAL(timeUpdated(int)),this, SLOT(updateTime(int)));
                 connect(newSession, SIGNAL(graphUpdated(QCPDataContainer<QCPGraphData>)), this, SLOT(updateGraphData(QCPDataContainer<QCPGraphData>)));
                 connect(newSession, SIGNAL(coherenceUpdated(float,float)), this, SLOT(updateCoherence(float,float)));
+                connect(newSession, SIGNAL(coherenceLevelUpdated(int)),this, SLOT(updateCoherenceLight(int)));
                 newSession->startSession();
+
+                animation->setDuration(ui->breathPacerInterval->value()*2000); //*2000 since green = breath and thats
+                animation->start();
+
             }
             else{
                 sessionLog.front()->stopSession();
                 selectedOption=0;
                 ui->stackedWidget->setCurrentIndex(1);
                 loadSessionSummary();
+                animation->stop();
             }
             break;
         case 1: //Session summary
@@ -119,18 +130,6 @@ void MainWindow::on_startStopSessionButton_clicked()
         case 4:
             break; //Settings
     }
-
-//    if(ui->activesession->isChecked()==false){
-    //        if (timer->isActive()){
-    //            timer->stop();
-    //        }
-    //        QString filename= "logsoflatestsession.txt" ;
-    //        QFile file(filename);
-    //        file.open(QIODevice::WriteOnly | QIODevice::Text);
-    //        QTextStream out(&file);
-    //        out << "here is the data: \nCoherence values: " << ui->coherenceValue->text() << "\nLength of Session: " << ui->lengthValue->text() << "\nAchivement Value: " << ui->achievementValue->text() << endl;
-    //        file.close();
-    //    }
    }
 
 //move between pages/screens button commands
@@ -149,6 +148,7 @@ void MainWindow::on_backButton_clicked()
             break;
         case 1: //Session summary
             ui->stackedWidget->setCurrentIndex(0);
+            break;
         case 2: //Menu page
             ui->stackedWidget->setCurrentIndex(0);
             break;
@@ -172,12 +172,7 @@ void MainWindow::on_downArrowButton_clicked(){
             this->selectedOption = 1;
             break;
         case 3:
-            cout<<selectedOption<<endl;
-            cout<<ui->sessionHistoryDisplay->count()<<endl;
             if(selectedOption != int(sessionLog.size()) -1){
-                if(ui->sessionHistoryDisplay->itemAt(selectedOption)){
-                    cout<<"found"<<endl;
-                }
                 QPushButton *oldOption= qobject_cast<QPushButton*>(ui->sessionHistoryDisplay->itemAt(selectedOption)->widget());
                 selectedOption ++;
                 QPushButton *newOption= qobject_cast<QPushButton*>(ui->sessionHistoryDisplay->itemAt(selectedOption)->widget());
@@ -201,8 +196,6 @@ void MainWindow::on_upArrowButton_clicked(){
             this->selectedOption=0;
             break;
         case 3:
-            cout<<selectedOption<<endl;
-            cout<<ui->sessionHistoryDisplay->count()<<endl;
             if(selectedOption >0){
                 QPushButton *oldOption= qobject_cast<QPushButton*>(ui->sessionHistoryDisplay->itemAt(selectedOption)->widget());
                 selectedOption --;
@@ -221,6 +214,19 @@ void MainWindow::on_upArrowButton_clicked(){
 
 void MainWindow::on_hrContact_stateChanged() {
     sessionLog.front()->setHrvContact();
+}
+
+void MainWindow::on_powerButton_clicked()
+{
+    ui->stackedWidget->setVisible(!ui->stackedWidget->isVisible());
+    ui->batteryValue->setVisible(!ui->batteryValue->isVisible());
+    QTimer *batteryTimer = new QTimer;
+    connect(batteryTimer, &QTimer::timeout, this, [this]{batteryDrain();});
+    if(batteryTimer->isActive()){
+        batteryTimer->stop();
+    }else{
+        batteryTimer->start(10000); //drain 1% every 10 sec
+    }
 }
 
 //Create Ui with previous sessions
@@ -245,6 +251,7 @@ void MainWindow::loadSessionHistory(){
     }
 }
 
+//loads session summary data
 void MainWindow::loadSessionSummary(){
     list<Session*>::iterator it =sessionLog.begin();
     advance(it, selectedOption);
@@ -280,8 +287,9 @@ void MainWindow::updateCoherence(float coherenceScore, float achievementScore){
 }
 
 void MainWindow::on_resetHistory_clicked(){
-   //sessionLog.clear();
-   //@TODO CLEAR BUTTONS FROM SESSION HISTORY
+    sessionLog.clear(); //wipe session history
+    ui->challengeLevelValue->setValue(1);
+    ui->breathPacerInterval->setValue(10);
 }
 
 QString MainWindow::formatTime(int elapsedSeconds){
@@ -297,5 +305,24 @@ QString MainWindow::formatTime(int elapsedSeconds){
 
 void MainWindow::batteryDrain(){
     ui->batteryValue->display(ui->batteryValue->intValue()-1);
+    if (ui->batteryValue == 0){
+        ui->stackedWidget->setVisible(false);
+    }
 }
+
+void MainWindow::updateCoherenceLight(int level){
+    cout<<"Ding!"<<endl;
+    switch (level){
+    case 0:
+        ui->coherenceLevelLight->setStyleSheet("background-color:#AA0000");
+        break;
+    case 1:
+        ui->coherenceLevelLight->setStyleSheet("background-color:#FFFF00");
+        break;
+    case 2:
+        ui->coherenceLevelLight->setStyleSheet("background-color:#4CAF50");
+        break;
+    }
+}
+
 

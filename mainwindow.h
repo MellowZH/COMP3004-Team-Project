@@ -31,6 +31,7 @@ private slots:
     void on_upArrowButton_clicked();
     void on_startStopSessionButton_clicked();
     void on_hrContact_stateChanged();
+    void on_powerButton_clicked();
     void loadSessionHistory();
     void loadSessionSummary();
     void updateTime(int);
@@ -39,11 +40,12 @@ private slots:
     void on_resetHistory_clicked();
     QString formatTime(int);
     void batteryDrain();
+    void updateCoherenceLight(int);
 
 private:
     Ui::MainWindow *ui;
     list<Session*> sessionLog;
     int selectedOption;
-
+    QPropertyAnimation *animation;
 };
 #endif // MAINWINDOW_H

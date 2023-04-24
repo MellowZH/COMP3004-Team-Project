@@ -32,6 +32,7 @@ private:
     float avgCoherence;
     char* date;
     QCPDataContainer<QCPGraphData> hrvData;
+    int coherenceLevel;
 };
 
 #endif // SESSIONDATA_H
