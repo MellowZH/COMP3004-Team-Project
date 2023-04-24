@@ -1,5 +1,5 @@
 #include "session.h"
-#include <winsock.h>
+//#include <winsock.h>
 #include<iostream>
 #include <random>
 
